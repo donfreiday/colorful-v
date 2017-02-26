@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    02/26/17 09:25:57
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    02/26/17 11:42:16
 assignment4.asm						     Page 1 - 1
 
 
@@ -27,53 +27,73 @@ assignment4.asm						     Page 1 - 1
 
 				ExitProcess proto,dwExitCode:dword
 
- = 0000000A			n = 10 ; Size of array (in DWORDs) to fill with Fibonacci numbers
+ = 0000002A			character = '*' ; Character to print
+ = 000000FF			colorRange = 0FFh ; Range of available colors
+ = 00000005			numAsterisks = 5 ; Number of asterisks to print
+ = 00000014			numRows = 20 ; Number of rows to print
 
  00000000			.data
- 00000000  0000000A [			array DWORD n DUP(0FFFFFFFFh)
-	    FFFFFFFF
-	   ]
- 00000028 00000000			prevVal DWORD 0
- 0000002C 0D 0A 00			newLine BYTE 13,10,0 ; newline string
-
  00000000			.code
  00000000			main proc
- 00000000  B9 0000000A			mov ecx,LENGTHOF array ; ecx = loop counter
- 00000005  BF 00000000 R		mov edi,OFFSET array ; edi = address of array
-							
- 0000000A  B8 00000001			mov eax,1
- 0000000F  BB 00000000			mov ebx,0
+ 00000000  E8 00000000 E		call Randomize ; Re-seeds the random number generator with the current time in hundredths of seconds
+					
+ 00000005  B9 00000014			mov ecx,numRows ; Loop numRows times
+ 0000000A  B2 04			mov dl,4 ; Initial cursor position is column 4
+ 0000000C  B6 02			mov dh,2 ; Initial cursor position is row 2
+ 0000000E  B0 01			mov al,1 ; Direction to move cursor
+ 00000010  E8 00000025			call PrintRows ; Print left half of V
+ 00000015  B2 38			mov dl,56 ; Initial cursor position is column 56
+ 00000017  B6 02			mov dh,2 ; Initial cursor position is row 2
+ 00000019  B0 FF			mov al,-1 ; Direction to move cursor
+ 0000001B  E8 0000001A			call PrintRows ; Print right half of V
 
- 00000014  89 07			mov [edi],eax ; first element is 1
- 00000016  83 C7 04			add edi, TYPE array ; edi points to next element
- 00000019  83 E9 01			sub ecx,1 ; one less iteration to account for first element assignment
-
- 0000001C				L1:
- 0000001C  A3 00000028 R			mov prevVal,eax
- 00000021  03 C3				add eax,ebx
- 00000023  89 07				mov [edi],eax
- 00000025  8B 1D 00000028 R			mov ebx,prevVal
-								
- 0000002B  83 C7 04				add edi, TYPE array ; edi points to next element
- 0000002E  E2 EC				loop L1;
-
-					; Print array
- 00000030  B9 0000000A			mov ecx,LENGTHOF array ; ecx = loop counter
- 00000035  BF 00000000 R		mov edi,OFFSET array ; edi = address of array
- 0000003A  BA 0000002C R		mov edx,OFFSET newLine ; for Irvine WriteString
- 0000003F				L2:
- 0000003F  8B 07				mov eax,[edi]
- 00000041  E8 00000000 E			call WriteInt
- 00000046  E8 00000000 E			call WriteString ; newline
- 0000004B  83 C7 04				add edi, TYPE array
- 0000004E  E2 EF				loop L2
+					; Display “Press any key to continue” in white text on a black background
+ 00000020  B0 0F			mov al,white
+ 00000022  B4 00			mov ah,black
+ 00000024  E8 00000000 E		call SetTextColor
+ 00000029  E8 00000000 E		call CrLf
+ 0000002E  E8 00000000 E		call WaitMsg
 
 					invoke ExitProcess,0 
- 00000050  6A 00	   *	    push   +000000000h
- 00000052  E8 00000000 E   *	    call   ExitProcess
- 00000057			main endp
+ 00000033  6A 00	   *	    push   +000000000h
+ 00000035  E8 00000000 E   *	    call   ExitProcess
+ 0000003A			main endp
+
+ 0000003A			PrintRows proc
+ 0000003A  51				push ecx
+ 0000003B  50				push eax
+ 0000003C  52				push edx
+ 0000003D				L1:
+ 0000003D  E8 00000000 E			call Gotoxy ; Locates the cursor at a row and column; specified by dh and dl respectively
+ 00000042  E8 0000000F				call PrintAsterisks
+ 00000047  E8 00000000 E			call CrLf
+ 0000004C  02 D0				add dl,al ; Move cursor to the right or left by the number of  columns specified in al
+ 0000004E  FE C6				inc dh ; Move cursor down one row
+ 00000050  E2 EB				loop L1
+ 00000052  5A				pop edx
+ 00000053  58				pop eax
+ 00000054  59				pop ecx
+ 00000055  C3				ret
+ 00000056			PrintRows endp
+
+ 00000056			PrintAsterisks proc
+ 00000056  51				push ecx ; preserve ecx
+ 00000057  50				push eax ; preserve eax
+ 00000058  B9 00000005			mov ecx,numAsterisks
+ 0000005D				L1:
+ 0000005D  B8 000000FF				mov eax,colorRange ; Set eax to desired range of colors
+ 00000062  E8 00000000 E			call RandomRange 
+ 00000067  E8 00000000 E			call SetTextColor
+ 0000006C  B0 2A				mov al,character ; Set character to be printed by WriteChar
+ 0000006E  E8 00000000 E			call WriteChar
+ 00000073  E2 E8				loop L1
+ 00000075  58				pop eax ; restore eax
+ 00000076  59				pop ecx ; restore ecx
+ 00000077  C3				ret
+ 00000078			PrintAsterisks endp
+
 				end main
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    02/26/17 09:25:57
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    02/26/17 11:42:16
 assignment4.asm						     Symbols 2 - 1
 
 
@@ -167,8 +187,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 0000002F Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000057 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000000 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000078 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -223,6 +243,10 @@ OpenInputFile  . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 ParseDecimal32 . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ParseInteger32 . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 PeekConsoleInputA  . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+PrintAsterisks . . . . . . . . .	P Near	 00000056 _TEXT	Length= 00000022 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 0000005D _TEXT	
+PrintRows  . . . . . . . . . . .	P Near	 0000003A _TEXT	Length= 0000001C Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 0000003D _TEXT	
 Random32 . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 RandomRange  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Randomize  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -275,9 +299,7 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000057 Public STDCALL
-  L1 . . . . . . . . . . . . . .	L Near	 0000001C _TEXT	
-  L2 . . . . . . . . . . . . . .	L Near	 0000003F _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000003A Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
@@ -496,10 +518,11 @@ VK_UP  . . . . . . . . . . . . .	Number	 00000026h
 WINDOW_BUFFER_SIZE_EVENT . . . .	Number	 00000004h   
 WriteConsoleOutputCharacter  . .	Text   	 WriteConsoleOutputCharacterA
 WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
-array  . . . . . . . . . . . . .	DWord	 00000000 _DATA	
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
+character  . . . . . . . . . . .	Number	 0000002Ah   
+colorRange . . . . . . . . . . .	Number	 000000FFh   
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 gray . . . . . . . . . . . . . .	Number	 00000008h   
@@ -511,9 +534,8 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
-newLine  . . . . . . . . . . . .	Byte	 0000002C _DATA	
-n  . . . . . . . . . . . . . . .	Number	 0000000Ah   
-prevVal  . . . . . . . . . . . .	DWord	 00000028 _DATA	
+numAsterisks . . . . . . . . . .	Number	 00000005h   
+numRows  . . . . . . . . . . . .	Number	 00000014h   
 red  . . . . . . . . . . . . . .	Number	 00000004h   
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
