@@ -1,4 +1,4 @@
-; assignment4.asm - CISC225 Assignment 3 (Colorful V)
+; assignment4.asm - CISC225 Assignment 4 (Colorful V)
 ; Prints a 'V' shape made of asterisks with random foreground and background colors
 ; Don Freiday
 ; 2/26/2017
@@ -12,7 +12,6 @@ colorRange = 0FFh ; Range of available colors
 numAsterisks = 20 ; Number of asterisks to print
 numRows = 20 ; Number of rows to print
 
-.data
 .code
 main proc
 	call Randomize ; Re-seeds the random number generator with the current time in hundredths of seconds
@@ -44,10 +43,12 @@ main endp
 ;---------------------------------------------------------------------
 ; PrintRows
 ;	 Prints rows of characters
+;
 ; Receives: 
 ;	dl = Initial cursor column
 ;	dh = Initial cursor row
-;	al = Number of columns to move left or right each row iteration
+;	al = Direction; number of columns to move left or right each row iteration
+;
 ; Returns: 
 ;	Nothing
 ;---------------------------------------------------------------------
@@ -71,10 +72,12 @@ PrintRows endp
 ;---------------------------------------------------------------------
 ; PrintAsterisks
 ;	 Prints asterisks with random foreground and background color
+;
 ; Receives: 
 ;	numAsterisks (symbolic constant) = number of characters to print
 ;	character (symbolic constant) = which character to print
 ;	colorRange (symbolic constant) = range of color codes
+;
 ; Returns: 
 ;	Nothing
 ;---------------------------------------------------------------------
