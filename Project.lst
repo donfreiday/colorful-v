@@ -1,8 +1,8 @@
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    02/26/17 11:58:36
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    02/26/17 12:05:00
 assignment4.asm						     Page 1 - 1
 
 
-				; assignment4.asm - CISC225 Assignment 3 (Colorful V)
+				; assignment4.asm - CISC225 Assignment 4 (Colorful V)
 				; Prints a 'V' shape made of asterisks with random foreground and background colors
 				; Don Freiday
 				; 2/26/2017
@@ -30,10 +30,9 @@ assignment4.asm						     Page 1 - 1
 
  = 0000002A			character = '*' ; Character to print
  = 000000FF			colorRange = 0FFh ; Range of available colors
- = 00000014			numAsterisks = 20 ; Number of asterisks to print
+ = 00000014			numAsterisks = 20 ; Number of asterisks to print per row
  = 00000014			numRows = 20 ; Number of rows to print
 
- 00000000			.data
  00000000			.code
  00000000			main proc
  00000000  E8 00000000 E		call Randomize ; Re-seeds the random number generator with the current time in hundredths of seconds
@@ -67,10 +66,12 @@ assignment4.asm						     Page 1 - 1
 				;---------------------------------------------------------------------
 				; PrintRows
 				;	 Prints rows of characters
+				;
 				; Receives: 
 				;	dl = Initial cursor column
 				;	dh = Initial cursor row
-				;	al = Number of columns to move left or right each row iteration
+				;	al = Direction; number of columns to move left or right each row iteration
+				;
 				; Returns: 
 				;	Nothing
 				;---------------------------------------------------------------------
@@ -94,10 +95,12 @@ assignment4.asm						     Page 1 - 1
 				;---------------------------------------------------------------------
 				; PrintAsterisks
 				;	 Prints asterisks with random foreground and background color
+				;
 				; Receives: 
 				;	numAsterisks (symbolic constant) = number of characters to print
 				;	character (symbolic constant) = which character to print
 				;	colorRange (symbolic constant) = range of color codes
+				;
 				; Returns: 
 				;	Nothing
 				;---------------------------------------------------------------------
@@ -118,7 +121,7 @@ assignment4.asm						     Page 1 - 1
  00000078			PrintAsterisks endp
 
 				end main
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    02/26/17 11:58:36
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    02/26/17 12:05:00
 assignment4.asm						     Symbols 2 - 1
 
 

@@ -9,7 +9,7 @@ ExitProcess proto,dwExitCode:dword
 
 character = '*' ; Character to print
 colorRange = 0FFh ; Range of available colors
-numAsterisks = 20 ; Number of asterisks to print
+numAsterisks = 20 ; Number of asterisks to print per row
 numRows = 20 ; Number of rows to print
 
 .code
